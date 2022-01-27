@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public class ConcatenatedWords {
@@ -22,6 +23,7 @@ public class ConcatenatedWords {
     TrieNode root;
 
     boolean findWord(String word) {
+        if (word.length() == 0) return false;
         boolean[] suffixFound = new boolean[word.length()];
         Arrays.fill(suffixFound, false);
         for(int suffixStart = word.length() - 1; suffixStart >= 0; --suffixStart) {
@@ -29,14 +31,7 @@ public class ConcatenatedWords {
             TrieNode node = root;
             while(node != null) {
                 if (node.wordEnd) {
-                    // Exclude the case that this word match with itself
-                    if (pos == word.length()) {
-                      if (suffixStart != 0) {
-                          suffixFound[suffixStart] = true;
-                      }
-                      break;
-                    }
-                    if (suffixFound[pos]) {
+                    if (pos == word.length() || suffixFound[pos]) {
                         suffixFound[suffixStart] = true;
                         break;
                     }
@@ -51,17 +46,17 @@ public class ConcatenatedWords {
     }
 
     public List<String> findAllConcatenatedWordsInADict(String[] words) {
-        root = new TrieNode();
-        for (String word : words) {
-            root.addWord(word, 0);
-        }
+        Arrays.sort(words, Comparator.comparingInt(String::length));
 
         List<String> concatenatedWords = new ArrayList<>();
+        root = new TrieNode();
         for (String word : words) {
             if (findWord(word)) {
                 concatenatedWords.add(word);
             }
+            root.addWord(word, 0);
         }
+
         return concatenatedWords;
     }
 }
