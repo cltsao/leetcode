@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class WorkBreak2 {
+public class WordBreak2 {
     class TrieNode {
         TrieNode[] children = new TrieNode[26];
         boolean wordEnd;

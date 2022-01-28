@@ -5,8 +5,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class WorkBreak2Test {
-    WorkBreak2 wb2 = new WorkBreak2();
+public class WordBreak2Test {
+    WordBreak2 wb2 = new WordBreak2();
 
     @Test
     public void testExample1() {
