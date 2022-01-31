@@ -83,10 +83,12 @@ public class AutocompleteSystem {
             return List.of();
         } else {
             characters.append(c);
+            if (node == null) return List.of();
             if (node.children[getCharIndex(c)] != null) {
                 node = node.children[getCharIndex(c)];
                 return node.sentences;
             } else {
+                node = null;
                 return List.of();
             }
         }
