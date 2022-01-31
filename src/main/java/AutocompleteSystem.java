@@ -5,64 +5,54 @@ public class AutocompleteSystem {
         return (c == ' ') ? 26 : c - 'a';
     }
     Map<String, Integer> sentenceTimes = new HashMap<>();
+    Comparator<Map.Entry<String, Integer>> sentenceComparator = new Comparator<Map.Entry<String, Integer>>() {
+        @Override
+        public int compare(Map.Entry<String, Integer> s1, Map.Entry<String, Integer> s2) {
+            if (s1.getValue() == s2.getValue()) return s1.getKey().compareTo(s2.getKey());
+            return s2.getValue() - s1.getValue();
+        }
+    };
 
     class TrieNode {
         TrieNode[] children = new TrieNode[27];
-        List<String> sentences = new ArrayList<>();
-        List<Integer> times = new ArrayList<>();
+        Map<String, Integer> sentences = new HashMap<>();
 
         void addSentenceTime(String sentence, int time) {
-            for(int i = 0; i < sentences.size(); ++i) {
-                if (sentence.equals(sentences.get(i))) {
-                    sentences.remove(i);
-                    times.remove(i);
-                }
-            }
+            sentences.put(sentence, time);
 
-            if (sentences.size() < 3) {
-                for (int i = 0; i < sentences.size(); ++i) {
-                    if (time > times.get(i) || (time == times.get(i) && sentence.compareTo(sentences.get(i)) < 0)) {
-                        sentences.add(i, sentence);
-                        times.add(i, time);
-                        return;
-                    }
-                }
-                sentences.add(sentence);
-                times.add(time);
-            }
-            else {
-                for (int i = 0; i < 3; ++i) {
-                    if (time > times.get(i) || (time == times.get(i) && sentence.compareTo(sentences.get(i)) < 0)) {
-                        sentences.add(i, sentence);
-                        times.add(i, time);
-                        if (sentences.size() == 4) {
-                            sentences.remove(3);
-                            times.remove(3);
-                        }
-                        return;
-                    }
-                }
+            if (sentences.size() > 3) {
+                Map.Entry<String, Integer> leastEntry = Collections.max(sentences.entrySet(), sentenceComparator);
+                sentences.remove(leastEntry.getKey());
             }
         }
 
-        void addSentence(String sentence, int time, int pos) {
-            addSentenceTime(sentence, time);
-
-            if(pos < sentence.length()) {
-                int childIndex = getCharIndex(sentence.charAt(pos));
-                if (children[childIndex] == null) {
-                    children[childIndex] = new TrieNode();
-                }
-                children[childIndex].addSentence(sentence, time,pos + 1);
-            }
+        List<String> getSentences() {
+            PriorityQueue<Map.Entry<String, Integer>> heap = new PriorityQueue<>(3, sentenceComparator);
+            for(Map.Entry<String, Integer> entry : sentences.entrySet()) heap.offer(entry);
+            List<String> sortedSentences = new ArrayList<>();
+            while(!heap.isEmpty()) sortedSentences.add(heap.poll().getKey());
+            return sortedSentences;
         }
     }
 
     TrieNode root = new TrieNode();
 
+    void addSentence(String sentence, int time) {
+        TrieNode node = root;
+        for(int pos = 0; pos < sentence.length(); ++pos) {
+            node.addSentenceTime(sentence, time);
+            int childIndex = getCharIndex(sentence.charAt(pos));
+            if (node.children[childIndex] == null) {
+                node.children[childIndex] = new TrieNode();
+            }
+            node = node.children[childIndex];
+        }
+        node.addSentenceTime(sentence, time);
+    }
+
     public AutocompleteSystem(String[] sentences, int[] times) {
         for(int i = 0; i < sentences.length; ++i) {
-            root.addSentence(sentences[i], times[i], 0);
+            addSentence(sentences[i], times[i]);
             sentenceTimes.put(sentences[i], times[i]);
         }
     }
@@ -79,14 +69,14 @@ public class AutocompleteSystem {
             if (time == null) time = 1;
             else ++time;
             sentenceTimes.put(sentence, time);
-            root.addSentence(sentence, time, 0);
+            addSentence(sentence, time);
             return List.of();
         } else {
             characters.append(c);
             if (node == null) return List.of();
             if (node.children[getCharIndex(c)] != null) {
                 node = node.children[getCharIndex(c)];
-                return node.sentences;
+                return node.getSentences();
             } else {
                 node = null;
                 return List.of();
