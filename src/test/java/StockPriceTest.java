@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class StockPriceTest {
     @Test
     public void testExample1() {
-        StockPrice stockPrice = new StockPrice();
+        StockPrice stockPrice = new StockPrice
+                ();
         stockPrice.update(1, 10); // Timestamps are [1] with corresponding prices [10].
         stockPrice.update(2, 5);  // Timestamps are [1,2] with corresponding prices [10,5].
         assertEquals(5, stockPrice.current());     // return 5, the latest timestamp is 2 with the price being 5.
