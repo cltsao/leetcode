@@ -49,4 +49,9 @@ public class SentenceScreenFittingTest {
     public void testExample9() {
         assertEquals(62500, solution.wordsTyping(new String[] {"hi","ho","ni","hao","la","night","leetcode","welcome","awesome","light"}, 10000, 333));
     }
+
+    @Test
+    public void testExample10() {
+        assertEquals(1, solution.wordsTyping(new String[] {"a","b","c"}, 3, 1));
+    }
 }
