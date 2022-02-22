@@ -45,7 +45,7 @@ public class WildcardMatching {
     }
 
     // Backtrack only to last star
-    public boolean isMatch(String s, String p) {
+    public boolean isMatchBacktrack(String s, String p) {
         int sPos = 0;
         int pPos = 0;
         int starIndex = -1;
@@ -68,5 +68,39 @@ public class WildcardMatching {
             }
         }
         return true;  // reaching end of both str and pattern
+    }
+
+    // DP
+    public boolean isMatch(String s, String p) {
+        // True if pattern[0,i] matches with str[0,j]
+        boolean[][] dp = new boolean[p.length() + 1][s.length() + 1];
+        dp[0][0] = true;
+        for(int j = 1; j <= s.length(); ++j)
+            dp[0][j] = false;
+        for(int i = 1; i <= p.length(); ++i) {
+            switch(p.charAt(i - 1)) {
+                case '?':
+                    dp[i][0] = false;
+                    for(int j = 1; j <= s.length(); ++j) {
+                        dp[i][j] = dp[i-1][j-1];
+                    }
+                    break;
+                case '*':
+                    dp[i][0] = dp[i-1][0];
+                    for(int j = 1; j <= s.length(); ++j) {
+                        dp[i][j] = dp[i][j-1] || dp[i-1][j];  // Use * to match j's character in str; don't use * to match j's character in str
+                    }
+                    break;
+                default:
+                    dp[i][0] = false;
+                    for(int j = 1; j <= s.length(); ++j) {
+                        if (p.charAt(i - 1) == s.charAt(j - 1))
+                            dp[i][j] = dp[i-1][j-1];
+                        else
+                            dp[i][j] = false;
+                    }
+            }
+        }
+        return dp[p.length()][s.length()];
     }
 }
