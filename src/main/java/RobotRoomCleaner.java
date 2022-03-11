@@ -39,13 +39,13 @@ public class RobotRoomCleaner {
     }
 
     private void visit(Robot robot, int x, int y, int dir) {
-        // System.out.println("Visit (" + x + ", " + y + ") by direction " + Arrays.toString(directions[dir]));
+        //System.out.println("Visit (" + x + ", " + y + ") by direction " + Arrays.toString(directions[dir]));
         robot.clean();
 
-        // try cell on the right, ahead, and then on the left
+        // try cell on the right, ahead, on the left, and back (edge case to visit cells at back from origin)
         robot.turnRight();
         dir = (dir + 1) % 4;
-        for(int i = 0; i < 3; ++i) {
+        for(int i = 0; i < 4; ++i) {
             int[] direction = directions[dir];
             if (!getMap(x + direction[0], y + direction[1])) {
                 setMap(x + direction[0], y + direction[1], true);
@@ -54,7 +54,7 @@ public class RobotRoomCleaner {
                     visit(robot, x + direction[0], y + direction[1], dir);
                     robot.turnRight();  // because robot move backward to this cell
                 } else {
-                    // System.out.println("Hit a wall at (" + x + ", " + y + ") by direction " + Arrays.toString(direction));
+                    //System.out.println("Hit a wall at (" + x + ", " + y + ") by direction " + Arrays.toString(direction));
                     robot.turnLeft();  // turn left to the next direction to try
                 }
             } else {
@@ -65,6 +65,7 @@ public class RobotRoomCleaner {
         }
 
         // Move back to where the robot came from
+        robot.turnRight();
         robot.move();
     }
 

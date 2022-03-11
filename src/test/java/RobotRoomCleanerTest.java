@@ -1,5 +1,7 @@
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 public class RobotRoomCleanerTest {
     static final int[][] directions = new int[][] {new int[] {1, 0}, new int[]{0, 1}, new int[]{-1, 0}, new int[]{0, -1}};
 
@@ -40,14 +42,33 @@ public class RobotRoomCleanerTest {
 
         @Override
         public void clean() {
-
+            ++map[y][x];
         }
     }
 
     @Test
     public void testExample1() {
-        Robot robot = new RobotImpl(new int[][]{new int[]{1,1,1,1,1,0,1,1},new int[]{1,1,1,1,1,0,1,1},new int[]{1,0,1,1,1,1,1,1},new int[]{0,0,0,1,0,0,0,0},new int[]{1,1,1,1,1,1,1,1}}, 3, 1);
+        int[][] map = new int[][]{new int[]{1,1,1,1,1,0,1,1},new int[]{1,1,1,1,1,0,1,1},new int[]{1,0,1,1,1,1,1,1},new int[]{0,0,0,1,0,0,0,0},new int[]{1,1,1,1,1,1,1,1}};
+        Robot robot = new RobotImpl(map, 3, 1);
         RobotRoomCleaner solution = new RobotRoomCleaner();
         solution.cleanRoom(robot);
+        assertAllCellsCleaned(map);
+    }
+
+    @Test
+    public void testExample2() {
+        int[][] map = new int[][]{new int[]{1, 1}};
+        Robot robot = new RobotImpl(map, 1, 0);
+        RobotRoomCleaner solution = new RobotRoomCleaner();
+        solution.cleanRoom(robot);
+        assertAllCellsCleaned(map);
+    }
+
+    private void assertAllCellsCleaned(int[][] map) {
+        for(int r = 0; r < map.length; ++r) {
+            for(int c = 0; c < map[r].length; ++c) {
+                assertNotEquals(1, map[r][c], "Cell[" + r + "][" + c + "] is not cleaned");
+            }
+        }
     }
 }
