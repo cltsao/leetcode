@@ -7,11 +7,13 @@ import java.util.Set;
 
 public class FindAllPeopleWithSecret {
     class UnionFind {
-        int[] array;
+        int[] parent;
+        int[] rank;
 
         UnionFind(int n) {
-            array = new int[n];
-            for(int i = 0; i < n; ++i) array[i] = i;
+            parent = new int[n];
+            for(int i = 0; i < n; ++i) parent[i] = i;
+            rank = new int[n];
         }
 
         void join(int i, int j) {
@@ -19,23 +21,18 @@ public class FindAllPeopleWithSecret {
             int rootJ = find(j);
             if (rootI == rootJ) return;
 
-            // Keep the lower root for quick union check later
-            int root = Math.min(rootI, rootJ);
-            while (array[i] != root) {
-                int next = array[i];
-                array[i] = root;
-                i = next;
-            }
-            while (array[j] != root) {
-                int next = array[j];
-                array[j] = root;
-                j = next;
+            if (rank[rootI] > rank[rootJ]) {
+                rank[rootI]++;
+                parent[rootJ] = rootI;
+            } else {
+                rank[rootJ]++;
+                parent[rootI] = rootJ;
             }
         }
 
         int find(int i) {
-            if (array[i] == i) return i;
-            return array[i] = find(array[i]);
+            if (parent[i] == i) return i;
+            return parent[i] = find(parent[i]);
         }
 
         boolean connected(int i, int j) {
@@ -43,7 +40,7 @@ public class FindAllPeopleWithSecret {
         }
 
         void reset(int i) {
-            array[i] = i;
+            parent[i] = i;
         }
     }
 
