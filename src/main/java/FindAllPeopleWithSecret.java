@@ -8,12 +8,10 @@ import java.util.Set;
 public class FindAllPeopleWithSecret {
     class UnionFind {
         int[] parent;
-        int[] rank;
 
         UnionFind(int n) {
             parent = new int[n];
             for(int i = 0; i < n; ++i) parent[i] = i;
-            rank = new int[n];
         }
 
         void join(int i, int j) {
@@ -21,13 +19,7 @@ public class FindAllPeopleWithSecret {
             int rootJ = find(j);
             if (rootI == rootJ) return;
 
-            if (rank[rootI] > rank[rootJ]) {
-                rank[rootI]++;
-                parent[rootJ] = rootI;
-            } else {
-                rank[rootJ]++;
-                parent[rootI] = rootJ;
-            }
+            parent[rootI] = rootJ;
         }
 
         int find(int i) {
